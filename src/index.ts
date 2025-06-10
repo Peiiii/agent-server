@@ -1,6 +1,7 @@
 // Core exports
 export { OpenAIAgent } from './agent/openaiAgent';
-export { getAgentConfig } from './config/index';
+export { createServer } from './server/app';
+export { getAgentConfig } from './config';
 
 // Types
 export type { AgentConfig } from './config/index';

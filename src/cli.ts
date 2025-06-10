@@ -4,12 +4,14 @@ import chalk from 'chalk';
 import ora from 'ora';
 import boxen from 'boxen';
 import { createApp } from './server/app';
+import { OpenAIAgent } from './agent/openaiAgent';
+import { getAgentConfig } from './config';
 
 const program = new Command();
 
 program
   .name('ag-ui-server')
-  .description('AG-UI Node Server')
+  .description('AG-UI Server')
   .version('1.0.0')
   .option('-p, --port <number>', 'Port to listen on', '8000')
   .option('-d, --debug', 'Enable debug mode')
@@ -17,11 +19,12 @@ program
     const spinner = ora('Starting server...').start();
     
     try {
-      const app = createApp();
+      const agent = new OpenAIAgent(getAgentConfig());
+      const app = createApp(agent);
       const server = app.listen(options.port, () => {
         spinner.succeed(chalk.green('Server started successfully!'));
         console.log(boxen(
-          chalk.blue(`AG-UI Node server listening on port ${options.port}`),
+          chalk.blue(`AG-UI Server listening on port ${options.port}`),
           { padding: 1, borderColor: 'blue' }
         ));
       });

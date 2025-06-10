@@ -11,7 +11,7 @@ import {
   type StateSnapshotEvent,
   type ToolCallStartEvent,
   type ToolCallArgsEvent,
-  type ToolCallEndEvent
+  type ToolCallEndEvent,
 } from '@ag-ui/core';
 import { v4 as uuidv4 } from 'uuid';
 import OpenAI from 'openai';
@@ -28,15 +28,17 @@ export class OpenAIAgent {
   private config: AgentConfig;
 
   constructor(config: AgentConfig) {
-    this.config = config;
+    this.config = {
+      ...config,
+    };
     this.client = new OpenAI({
-      apiKey: config.openaiApiKey,
+      apiKey: this.config.openaiApiKey,
       baseURL: config.baseURL,
     });
   }
 
   private convertToolsToOpenAIFormat(tools: any[]): any[] {
-    return tools.map(tool => ({
+    return tools.map((tool) => ({
       type: 'function',
       function: {
         name: tool.name,
@@ -50,8 +52,12 @@ export class OpenAIAgent {
     return messages.map((message: any) => ({
       role: message.role,
       content: message.content || '',
-      ...(message.role === 'assistant' && message.tool_calls ? { tool_calls: message.tool_calls } : {}),
-      ...(message.role === 'tool' ? { tool_call_id: message.tool_call_id } : {}),
+      ...(message.role === 'assistant' && message.tool_calls
+        ? { tool_calls: message.tool_calls }
+        : {}),
+      ...(message.role === 'tool'
+        ? { tool_call_id: message.tool_call_id }
+        : {}),
     }));
   }
 
@@ -61,10 +67,7 @@ export class OpenAIAgent {
     for (const ctx of context) {
       contextContent += `- ${ctx.description}: ${ctx.value}\n`;
     }
-    return [
-      { role: 'system', content: contextContent },
-      ...messages,
-    ];
+    return [{ role: 'system', content: contextContent }, ...messages];
   }
 
   async *run(inputData: RunAgentInput, acceptHeader: string) {
@@ -76,11 +79,15 @@ export class OpenAIAgent {
     };
     yield encoder.encode(runStarted);
     try {
-      let messages = inputData.messages ? this.convertMessagesToOpenAIFormat(inputData.messages) : [];
+      let messages = inputData.messages
+        ? this.convertMessagesToOpenAIFormat(inputData.messages)
+        : [];
       if (inputData.context) {
         messages = this.addContextToMessages(messages, inputData.context);
       }
-      const tools = inputData.tools ? this.convertToolsToOpenAIFormat(inputData.tools) : [];
+      const tools = inputData.tools
+        ? this.convertToolsToOpenAIFormat(inputData.tools)
+        : [];
       const messageId = uuidv4();
       const textMessageStart: TextMessageStartEvent = {
         type: EventType.TEXT_MESSAGE_START,
@@ -150,10 +157,12 @@ export class OpenAIAgent {
         type: EventType.STATE_SNAPSHOT,
         snapshot: {
           last_response: fullResponse,
-          last_tool_call: toolCallStarted ? {
-            name: currentToolCallName,
-            arguments: currentToolCallArgs,
-          } : null,
+          last_tool_call: toolCallStarted
+            ? {
+                name: currentToolCallName,
+                arguments: currentToolCallArgs,
+              }
+            : null,
           usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
         },
       };
@@ -185,4 +194,4 @@ export class OpenAIAgent {
     };
     yield encoder.encode(runFinished);
   }
-} 
+}

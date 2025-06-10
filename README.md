@@ -1,4 +1,4 @@
-# AG-UI Node Server
+# AG-UI Server
 
 A Node.js server with OpenAI integration for AG-UI applications.
 
@@ -13,17 +13,17 @@ A Node.js server with OpenAI integration for AG-UI applications.
 ## Installation
 
 ```bash
-npm install ag-ui-node-server
+npm install ag-ui-server
 # or
-pnpm add ag-ui-node-server
+pnpm add ag-ui-server
 # or
-yarn add ag-ui-node-server
+yarn add ag-ui-server
 ```
 
 ## Quick Start
 
 ```typescript
-import { OpenAIAgent, createServer } from 'ag-ui-node-server';
+import { OpenAIAgent, createServer } from 'ag-ui-server';
 
 // Create an OpenAI agent
 const agent = new OpenAIAgent({
@@ -43,7 +43,7 @@ app.listen(3000, () => {
 ### OpenAIAgent
 
 ```typescript
-import { OpenAIAgent } from 'ag-ui-node-server';
+import { OpenAIAgent } from 'ag-ui-server';
 
 const agent = new OpenAIAgent({
   openaiApiKey: string,
@@ -56,7 +56,7 @@ const agent = new OpenAIAgent({
 ### Server
 
 ```typescript
-import { createServer } from 'ag-ui-node-server';
+import { createServer } from 'ag-ui-server';
 
 const app = createServer(agent);
 ```

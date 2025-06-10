@@ -4,32 +4,27 @@ dotenv.config();
 
 export interface AgentConfig {
   openaiApiKey: string;
-  baseURL: string;
   model: string;
-}
-
-export function getAgentConfig(): AgentConfig {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    throw new Error('OPENAI_API_KEY is required');
-  }
-
-  return {
-    openaiApiKey: apiKey,
-    baseURL: process.env.OPENAI_BASE_URL || 'https://dashscope.aliyuncs.com/compatible-mode/v1',
-    model: process.env.OPENAI_MODEL || 'qwen-max-latest',
-  };
+  temperature?: number;
+  maxTokens?: number;
+  baseURL?: string;
 }
 
 export interface ServerConfig {
   port: number;
 }
 
-export function getServerConfig(): ServerConfig {
-  return {
-    port: process.env.PORT ? parseInt(process.env.PORT) : 8000,
-  };
-}
+export const getAgentConfig = (): AgentConfig => ({
+  openaiApiKey: process.env.OPENAI_API_KEY || '',
+  model: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
+  temperature: Number(process.env.OPENAI_TEMPERATURE) || 0.7,
+  maxTokens: Number(process.env.OPENAI_MAX_TOKENS) || 1000,
+  baseURL: process.env.OPENAI_BASE_URL,
+});
+
+export const getServerConfig = (): ServerConfig => ({
+  port: Number(process.env.PORT) || 3000,
+});
 
 export default {
   getAgentConfig,

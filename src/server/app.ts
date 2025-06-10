@@ -3,9 +3,8 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import { OpenAIAgent } from '../agent/openaiAgent';
-import { getAgentConfig } from '../config/index';
 
-export const createApp = () => {
+export const createApp = (agent: OpenAIAgent) => {
   const app = express();
   
   // 日志中间件
@@ -13,15 +12,12 @@ export const createApp = () => {
   app.use(cors());
   app.use(express.json());
 
-  const agent = new OpenAIAgent(getAgentConfig());
-
   app.post('/openai-agent', async (req: Request, res: Response) => {
     const acceptHeader = req.headers.accept || 'application/json';
     const inputData = req.body;
     res.setHeader('Content-Type', acceptHeader);
 
     try {
-
       for await (const chunk of agent.run(inputData, acceptHeader)) {
         res.write(chunk);
       }
@@ -33,3 +29,6 @@ export const createApp = () => {
   });
   return app;
 };
+
+// 为了向后兼容，保留 createServer 作为 createApp 的别名
+export const createServer = createApp;
