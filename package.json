@@ -1,6 +1,6 @@
 {
   "name": "ag-ui-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AG-UI Node.js server with OpenAI integration",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
